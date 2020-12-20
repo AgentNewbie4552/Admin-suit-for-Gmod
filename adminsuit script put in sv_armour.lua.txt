@@ -1,0 +1,77 @@
+timer.Simple(2,function()
+	hook.Add( "EntityTakeDamage", "adminsuitByYesjustYes", function( pl,  dmg )
+		local WhitelistedGuns = {
+			"weapon_gblaster",
+		  "weapon_gblaster_badtime",
+			"weapon_bm_gluon2",
+			"weapon_bm_rifle",
+			"weapon_nrgbeam_admin",
+			"weapon_nrgbeam",
+			"weapon_bm_welder",
+			"weapon_bm_gauss2",
+			"weapon_bm_aimbot",
+			"weapon_redeemer",
+			"weapon_bm_rifle_nonadmin",
+			"weapon_bm_rifle_admin",
+			"weapon_asmd",
+			"x-8",
+			"weapon_gblaster_fake",
+			"weapon_bm_rifle_supreme",
+			"weapon_green_supreme_badtime_bm_gblaster",
+			"weapon_supreme_pink_badtime_bm_gblaster",
+			"weapon_buu_bms_tau",
+			"weapon_vaporizer_hardcore",
+			"awpdragon",
+			"weapon_nrgbeam_slaverp",
+			"weapon_buu_bms_gluon",
+			"weapon_csgo_awp_dragon_lore",
+			"weapon_bms_gluon",
+			"weapon_bm_ams",
+			"weapon_gblaster_asriel_rainbow",
+			"weapon_gblaster_pistol",
+			"weapon_supreme_badtime_bm_gblaster",
+			   "weapon_fake_gblaster",
+				"weapon_ginseng_adminrailgun",
+				"weapon_plasmagrenade",
+				"weapon_gblaster_tk",
+				"weapon_lightsaber",
+			}
+			
+			
+			local ply = dmg:GetInflictor()    
+			if not pl:IsPlayer() then else 
+			if not pl.adminsuit then else
+	
+							 if not table.HasValue(WhitelistedGuns, dmg:GetAttacker():GetActiveWeapon():GetClass()) then
+							 dmg:SetDamage(dmg:GetDamage()/4)
+						else
+						dmg:SetDamage(2)
+						end
+		  end
+		 end
+	end)
+	
+	end)
+
+if ( Armor.Save ) then
+	sql.Query( "CREATE TABLE IF NOT EXISTS armor_suits ( SteamID VARCHAR(50), SuitName VARCHAR(50) )" )
+	
+	hook.Add( "PlayerInitialSpawn", "loadArmorsRay", function( ply )
+		timer.Simple( 10, function()
+			if ( !IsValid( ply ) ) then return end
+			
+			local info = sql.Query( "SELECT * from armor_suits WHERE SteamID = '"..ply:SteamID().."'" )
+			
+			if ( info and table.Count( info ) > 0 ) then
+				ply.armorSuit = info[1]["SuitName"]
+				ply:applyArmorSuit()
+				
+				net.Start( "armorSend" )
+					net.WriteString( ply.armorSuit )
+				net.Send( ply )
+			end
+		end )
+	end )
+else
+	hook.Remove( "PlayerInitialSpawn", "loadArmorsRay" )
+end
